@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="keywords" content="SeaCache">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SeaCache: Spectral-Evolution-Aware Cache for Accelerating Diffusion Models</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+  >
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" type="image/x-icon" href="./static/images/favicon.ico">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['\\[', '\\]'], ['$$', '$$']]
+    }
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-2 publication-title">SeaCache: Spectral-Evolution-Aware Cache for Accelerating Diffusion Models</h1>
+          <div class="is-size-4 publication-authors">
+            <span class="author-block seacache-venue-badge">CVPR 2026</span>
+          </div>
+          <div class="is-size-5 publication-authors publication-authors-half">
+            <span class="author-block">
+              <a href="https://jiwoogit.github.io">Jiwoo Chung</a><sup>1,†</sup>,</span>
+            <span class="author-block">
+              <a href="https://hse1032.github.io/">Sangeek Hyun</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://2minkyulee.github.io/">MinKyu Lee</a><sup>1</sup>,</span>
+            <span class="author-block">
+              Byeongju Han<sup>2</sup>,</span>
+            <span class="author-block">
+              Geonho Cha<sup>2</sup>,</span>
+            <span class="author-block">
+              Dongyoon Wee<sup>2</sup>,</span>
+            <span class="author-block">
+              Youngjun Hong<sup>2,*</sup>,</span>
+            <span class="author-block">
+              <a href="https://sites.google.com/site/jaepilheo">Jae-Pil Heo</a><sup>1,*</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Sungkyunkwan University</span>
+            <span class="author-block"><sup>2</sup>NAVER Cloud</span>
+          </div>
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"><sup>†</sup> This work was done during an internship at NAVER Cloud.</span>
+            <span class="author-block"><sup>*</sup> Co-corresponding authors.</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2602.18993"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/jiwoogit/SeaCache"
+                   class="external-link button is-normal is-rounded is-dark"> <span class="icon"> <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+          <div class="seacache-wave-intro">
+            <div class="columns is-centered has-text-centered">
+              <div class="column is-full">
+                <p style="font-size: 1.25rem;"><b>SeaCache is a training-free acceleration method that leverages <span style="color: #007bb8;">Spectral Evolution</span> to decouple content-carrying low-frequency components from high-frequency noise.</b></p>
+              </div>
+            </div>
+            <div class="columns is-centered has-text-centered">
+              <div class="column is-three-fifths">
+                <img src="./static/images/abstract.png" alt="" style="margin-top: 1rem;">
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+</section>
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-three-quarter">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified" style="font-size: 1.0rem" >
+          <p>
+            Diffusion models are a strong backbone for visual generation, but their inherently sequential denoising process leads to slow inference. Previous methods accelerate sampling by caching and reusing intermediate outputs based on feature distances between adjacent timesteps. However, existing caching strategies typically rely on raw feature differences that entangle content and noise. This design overlooks spectral evolution, where low-frequency structure appears early and high-frequency detail is refined later.
+            <span style="color: #007bb8;">We introduce Spectral-Evolution-Aware Cache (<b>SeaCache</b>), a training-free cache schedule that bases reuse decisions on a spectrally aligned representation.</span> Through theoretical and empirical analysis, we derive a Spectral-Evolution-Aware (SEA) filter that preserves content-relevant components while suppressing noise.
+            Employing SEA-filtered input features to estimate redundancy leads to dynamic schedules that adapt to content while respecting the spectral priors underlying the diffusion model. Extensive experiments on diverse visual generative models and the baselines show that SeaCache achieves state-of-the-art latency-quality trade-offs.
+          </p>
+        </div>
+        <!-- <div class="columns is-centered">
+          <div class="column is-three-fifths">
+            <img src="./static/images/abstract.png" alt="Abstract overview" style="margin-top: 0.5rem;">
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Overview</h2>
+        <div class="content has-text-justified">
+
+          <p>
+            In this paper, we incorporate this spectral evolution, or equivalently the evolution of the signal-to-noise ratio, into cache scheduling. 
+            SeaCache applies a Spectral-Evolution-Aware (SEA) Filter to raw diffusion features so that the distance measure better captures timestep-aware spectral residuals between timesteps.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-three-fifths">
+            <img src="./static/images/main.jpg" alt="Overview of SeaCache Method">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Motivation</h2>
+        <div class="content has-text-justified">
+          <p>
+            Rather than treating all spectral components of diffusion feature equally, we design a cache metric that focuses on the signal component while downweighting the noise component. 
+            By grounding reuse decisions on discrepancies in the synthesized content, the resulting metric becomes less sensitive to high-frequency noise and encourages cache gating to respond to meaningful signal alignment rather than stochastic variation.
+          </p>
+
+          <p>
+            To validate this idea, we conduct <strong><em>an oracle experiment</em></strong> that compares cache schedules derived from raw feature distances with those derived from distances in a signal-emphasized space. 
+            In standard caching schemes, the decision to skip or compute is based on the distance between input features at consecutive timesteps. 
+            In our oracle analysis, we instead compare consecutive output features, thereby removing input-to-output approximation error and isolating the effect of spectral filtering.
+            Specifically, we compare two criteria: one that measures distances after applying the SEA (Spectral-Evolution-Aware) filter, which downweights the noise component, and another that uses unfiltered raw outputs, as shown in below figure.
+            The filtered criterion yields cache decisions that more closely track the full-compute trajectory, as evidenced by consistently higher PSNR. This suggests that spectrum-aware scheduling better preserves the behavior of the original model.
+          </p>
+        </div>
+
+        <div class="columns is-centered" style="margin-top: 1rem;">
+          <div class="column is-half has-text-centered">
+            <img src="./static/images/oracle_flux.jpg" alt="Latency-quality trade-off on FLUX" style="width: 100%; height: auto;">
+            <p class="title is-5" style="margin-top: 0.5rem;"><strong>Latency-quality trade-off on FLUX</strong></p>
+          </div>
+          <div class="column is-half has-text-centered">
+            <img src="./static/images/oracle_wan.jpg" alt="Latency-quality trade-off on Wan2.1 1.3B" style="width: 100%; height: auto;">
+            <p class="title is-5" style="margin-top: 0.5rem;"><strong>Latency-quality trade-off on Wan2.1 1.3B</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Method</h2>
+        <h3 class="title is-4 has-text-left">Spectral-Evolution-Aware Filter</h3>
+        <div class="content has-text-justified">
+          <p>
+            To design a filter that reflects spectral evolution, we formalize the change of the effective frequency band across timesteps.
+            By deriving an optimal linear denoiser, we propose a Spectral-Evolution-Aware (SEA) filter that effectively preserves content-relevant components while suppressing noise.
+            The visualization of the SEA filter is presented below.
+          </p>
+          <div class="columns is-centered" style="margin-top: 1rem;">
+            <div class="column is-half has-text-centered">
+              <img src="./static/images/vp_densitynorm.jpg" alt="Optimal linear denoising filter for different t" style="width: 100%; height: auto;">
+              <p class="title is-5" style="margin-top: 0.5rem;"><strong>Optimal linear denoising filter for different \(t\)</strong></p>
+            </div>
+            <div class="column is-half has-text-centered">
+              <img src="./static/images/vp_peaknorm.jpg" alt="Noramlized SEA filter for different t" style="width: 100%; height: auto;">
+              <p class="title is-5" style="margin-top: 0.5rem;"><strong>Noramlized SEA filter for different \(t\)</strong></p>
+            </div>
+          </div>
+          <h3 class="title is-4 has-text-left">Spectrum-Aware Dynamic Caching</h3>
+          <p>
+            Directly using SEA-filtered outputs in the cache metric is not practical, since the output is only available after a full denoiser run and thus offers no speedup. We therefore seek an input-side proxy that matches the SEA-filtered output distance as closely as possible. Building on the input features, introduced in SeaCache, we compare several candidates: raw input, raw output, the polynomial fitted input used in TeaCache, and their SEA-filtered counterparts obtained by applying from the proposed method.
+          </p>
+
+          <p>
+            Below figure reports the relative \(\ell_1\) distance between consecutive timesteps for these feature choices, averaged over ten samples on FLUX and Wan2.1 1.3B. The SEA-filtered input distances closely follow the SEA-filtered output distances along the entire trajectory, while raw input and polynomial fitted input show weaker alignment, especially at early timesteps.
+          </p>
+          <div class="columns is-centered" style="margin-top: 1rem;">
+            <div class="column is-half has-text-centered">
+              <img src="./static/images/diff_flux.jpg" alt="Optimal linear denoising filter for different t" style="width: 100%; height: auto;">
+              <p class="title is-5" style="margin-top: 0.5rem;"><strong>Rel \(\ell_1\) across the gen process on FLUX</strong></p>
+            </div>
+            <div class="column is-half has-text-centered">
+              <img src="./static/images/diff_wan.jpg" alt="Noramlized SEA filter for different t" style="width: 100%; height: auto;">
+              <p class="title is-5" style="margin-top: 0.5rem;"><strong>Rel \(\ell_1\) across the gen process on Wan2.1 1.3B</strong></p>
+            </div>
+          </div>
+        </div>
+        <h3 class="title is-4 has-text-left">Framework of SeaCache</h3>
+        <div class="content has-text-justified">
+          <p>
+            Given input features \(I_t\) and \(I_{t+1}\), SeaCache first applies FFT, multiplies by the timestep-dependent SEA filters \(G_t^{\mathrm{norm}}\) and \(G_{t+1}^{\mathrm{norm}}\), and then applies iFFT to obtain spectral-evolution-aware features \(\mathcal{P}(G_t^{\mathrm{norm}}, I_t)\) and \(\mathcal{P}(G_{t+1}^{\mathrm{norm}}, I_{t+1})\).
+            A spectrum-aware dynamic caching module measures the relative distance \(\widetilde{\Delta}_t\) between consecutive filtered features, accumulates it over timesteps, and either reuses the cached output or refreshes the denoiser when the threshold \(\delta\) is exceeded.
+            The underlying diffusion model remains unchanged, so SeaCache acts as a plug-and-play cache policy that replaces only the distance metric.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-full">
+            <img src="./static/images/main_figure.jpg" alt="Overview of SeaCache Method" style="margin-top: 1rem;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Quantitative Results</h2>
+        <div class="content has-text-justified" style="width: 100%; margin: 1rem auto 0 auto;">
+          <p>
+            For all experiments, generated images and videos are saved as PNG and MP4 files, respectively.
+            For text-to-image (T2I) generation, we evaluate 200 prompts from <a href="https://huggingface.co/datasets/shunk031/DrawBench">DrawBench</a> and generate images at 1024\(\times\)1024 resolution in FLUX.
+            For text-to-video (T2V) generation, we use 944 prompts from <a href="https://github.com/Vchitect/VBench">VBench</a> and generate 480p videos with 65 frames per prompt in Wan2.1.
+          </p>
+          <p>
+            For each configuration, we use the full-timestep output of the original model as the reference.
+            We compute PSNR, LPIPS, and SSIM between each cached sample and its reference, and then report the average over all samples.
+            The initial random seed is shared across our method and all baselines.
+            We consider two cache budgets, approximately 50% and 30%.
+          </p>
+        </div>
+        <div class="table-container" style="width: 66%; margin: 1.0rem auto 1.0rem auto;">
+              <p class="title is-5" style="margin: 0.5rem;"><strong>Quantitative Comparison in FLUX</strong></p>
+              <table class="table is-bordered is-striped is-hoverable is-narrow" style="width: 100%; font-size: 0.9rem; border-top: 2px solid #666; border-bottom: 2px solid #666; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Latency (s)</th>
+                    <th>TFLOPs</th>
+                    <th>PSNR ↑</th>
+                    <th>LPIPS ↓</th>
+                    <th>SSIM ↑</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Original (50 steps)</td>
+                    <td>20.9</td>
+                    <td>2976</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <td>Vanilla 25 steps</td>
+                    <td>10.5</td>
+                    <td>1487</td>
+                    <td>15.55</td>
+                    <td>0.409</td>
+                    <td>0.668</td>
+                  </tr>
+                  <tr>
+                    <td>Vanilla 15 steps</td>
+                    <td>6.4</td>
+                    <td>892</td>
+                    <td>17.84</td>
+                    <td>0.305</td>
+                    <td>0.740</td>
+                  </tr>
+                  <tr>
+                    <td style="border-top: 2px solid #444;">TeaCache (δ=0.3)</td>
+                    <td style="border-top: 2px solid #444;">11.4</td>
+                    <td style="border-top: 2px solid #444;">1547</td>
+                    <td style="border-top: 2px solid #444;">20.76</td>
+                    <td style="border-top: 2px solid #444;">0.211</td>
+                    <td style="border-top: 2px solid #444;">0.810</td>
+                  </tr>
+                  <tr>
+                    <td>TaylorSeer (S=3)</td>
+                    <td>9.8</td>
+                    <td>1191</td>
+                    <td>22.78</td>
+                    <td>0.163</td>
+                    <td>0.828</td>
+                  </tr>
+                  <tr>
+                    <td><strong>SeaCache (δ=0.3)</strong></td>
+                    <td><strong>9.4</strong></td>
+                    <td><strong>1098</strong></td>
+                    <td><strong>26.28</strong></td>
+                    <td><strong>0.106</strong></td>
+                    <td><strong>0.893</strong></td>
+                  </tr>
+                  <tr>
+                    <td style="border-top: 2px solid #444;">△-Dit</td>
+                    <td style="border-top: 2px solid #444;">15.5</td>
+                    <td style="border-top: 2px solid #444;">1984</td>
+                    <td style="border-top: 2px solid #444;">17.40</td>
+                    <td style="border-top: 2px solid #444;">0.336</td>
+                    <td style="border-top: 2px solid #444;">0.710</td>
+                  </tr>
+                  <tr>
+                    <td>ToCa</td>
+                    <td>15.9</td>
+                    <td>1263</td>
+                    <td>18.39</td>
+                    <td>0.324</td>
+                    <td>0.700</td>
+                  </tr>
+                  <tr>
+                    <td>TeaCache (δ=0.6)</td>
+                    <td>7.1</td>
+                    <td>892</td>
+                    <td>17.21</td>
+                    <td>0.348</td>
+                    <td>0.714</td>
+                  </tr>
+                  <tr>
+                    <td>TaylorSeer (S=5)</td>
+                    <td>7.5</td>
+                    <td>834</td>
+                    <td>19.97</td>
+                    <td>0.236</td>
+                    <td>0.762</td>
+                  </tr>
+                  <tr>
+                    <td><strong>SeaCache (δ=0.6)</strong></td>
+                    <td><strong>6.4</strong></td>
+                    <td><strong>773</strong></td>
+                    <td><strong>21.33</strong></td>
+                    <td><strong>0.226</strong></td>
+                    <td><strong>0.798</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+        <div class="table-container" style="width: 66%; margin: 0 auto;">
+              <p class="title is-5" style="margin: 0.5rem;"><strong>Quantitative Comparison in Wan2.1 1.3B</strong></p>
+              <table class="table is-bordered is-striped is-hoverable is-narrow" style="width: 100%; font-size: 0.9rem; border-top: 2px solid #666; border-bottom: 2px solid #666; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Latency (s)</th>
+                    <th>TFLOPs</th>
+                    <th>PSNR ↑</th>
+                    <th>LPIPS ↓</th>
+                    <th>SSIM ↑</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Original (50 steps)</td>
+                    <td>176.3</td>
+                    <td>8214</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <td style="border-top: 2px solid #444;">TeaCache (δ=0.09)</td>
+                    <td style="border-top: 2px solid #444;">86.6</td>
+                    <td style="border-top: 2px solid #444;">4107</td>
+                    <td style="border-top: 2px solid #444;">20.84</td>
+                    <td style="border-top: 2px solid #444;">0.171</td>
+                    <td style="border-top: 2px solid #444;">0.721</td>
+                  </tr>
+                  <tr>
+                    <td>TaylorSeer (S=2)</td>
+                    <td>93.1</td>
+                    <td>4189</td>
+                    <td>16.15</td>
+                    <td>0.336</td>
+                    <td>0.543</td>
+                  </tr>
+                  <tr>
+                    <td><strong>SeaCache (δ=0.2)</strong></td>
+                    <td><strong>83.9</strong></td>
+                    <td><strong>3942</strong></td>
+                    <td><strong>26.60</strong></td>
+                    <td><strong>0.075</strong></td>
+                    <td><strong>0.873</strong></td>
+                  </tr>
+                  <tr>
+                    <td style="border-top: 2px solid #444;">TeaCache (δ=0.15)</td>
+                    <td style="border-top: 2px solid #444;">63.6</td>
+                    <td style="border-top: 2px solid #444;">2957</td>
+                    <td style="border-top: 2px solid #444;">18.88</td>
+                    <td style="border-top: 2px solid #444;">0.245</td>
+                    <td style="border-top: 2px solid #444;">0.645</td>
+                  </tr>
+                  <tr>
+                    <td>TaylorSeer (S=3)</td>
+                    <td>67.1</td>
+                    <td>2956</td>
+                    <td>14.18</td>
+                    <td>0.455</td>
+                    <td>0.453</td>
+                  </tr>
+                  <tr>
+                    <td><strong>SeaCache (δ=0.35)</strong></td>
+                    <td><strong>56.6</strong></td>
+                    <td><strong>2793</strong></td>
+                    <td><strong>21.78</strong></td>
+                    <td><strong>0.170</strong></td>
+                    <td><strong>0.740</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Qualitative Results</h2>
+        <h3 class="title is-3" style="color: #2b6cb0;">FLUX-Dev</h3>
+        <img src="./static/images/fluxdev.jpg" alt="FLUX-Dev qualitative results" style="width: 100%; height: auto;">
+
+        <div class="columns is-centered">
+          <div class="column is-full has-text-centered">
+            <h3 class="title is-3" style="color: #2b6cb0; margin-top: 2rem;">HunyuanVideo</h3>
+            <h4 class="title is-4" style="margin: 0.75rem 0 0.2rem 0;">Refresh ratio: 50%</h4>
+            <video autoplay muted loop controls playsinline style="width: 100%; height: auto; margin-top: 0.15rem;">
+              <source src="./static/videos_compressed/hunyuan_50/a_skateboard_on_the_top_of_a_surfboard__front_view.mp4" type="video/mp4">
+            </video>
+            <p style="margin: 0.35rem 0 0.9rem 0; color: #000;">"A skateboard on the top of a surfboard front view"</p>
+            <video autoplay muted loop controls playsinline style="width: 100%; height: auto; margin-top: 0.75rem;">
+              <source src="./static/videos_compressed/hunyuan_50/A_person_is_running_on_treadmill.mp4" type="video/mp4">
+            </video>
+            <p style="margin: 0.35rem 0 0.9rem 0; color: #000;">"A person is running on treadmill"</p>
+            <h4 class="title is-4" style="margin: 0.75rem 0 0.2rem 0;">Refresh ratio: 30%</h4>
+            <video autoplay muted loop controls playsinline style="width: 100%; height: auto; margin-top: 0.15rem;">
+              <source src="./static/videos_compressed/hunyuan_30/an_orange_and_a_clock.mp4" type="video/mp4">
+            </video>
+            <p style="margin: 0.35rem 0 0.9rem 0; color: #000;">"An orange and a clock"</p>
+            <video autoplay muted loop controls playsinline style="width: 100%; height: auto; margin-top: 0.75rem;">
+              <source src="./static/videos_compressed/hunyuan_30/A_person_is_tai_chi.mp4" type="video/mp4">
+            </video>
+            <p style="margin: 0.35rem 0 0.9rem 0; color: #000;">"A person is tai chi"</p>
+          </div>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-full has-text-centered">
+            <h3 class="title is-3" style="color: #2b6cb0; margin-top: 1.5rem;">Wan2.1 1.3B</h3>
+            <h4 class="title is-4" style="margin: 0.75rem 0 0.2rem 0;">Refresh ratio: 50%</h4>
+            <video autoplay muted loop controls playsinline style="width: 100%; height: auto; margin-top: 0.15rem;">
+              <source src="./static/videos_compressed/wan2.1_1.3B_50/A_person_is_sweeping_floor.mp4" type="video/mp4">
+            </video>
+            <p style="margin: 0.35rem 0 0.9rem 0; color: #000;">"A person is sweeping floor"</p>
+            <video autoplay muted loop controls playsinline style="width: 100%; height: auto; margin-top: 0.75rem;">
+              <source src="./static/videos_compressed/wan2.1_1.3B_50/A_panda_cooking_in_the_kitchen.mp4" type="video/mp4">
+            </video>
+            <p style="margin: 0.35rem 0 0.9rem 0; color: #000;">"A panda cooking in the kitchen"</p>
+            <h4 class="title is-4" style="margin: 0.75rem 0 0.2rem 0;">Refresh ratio: 30%</h4>
+            <video autoplay muted loop controls playsinline style="width: 100%; height: auto; margin-top: 0.15rem;">
+              <source src="./static/videos_compressed/wan2.1_1.3B_30/Vampire_makeup_face_of_beautiful_girl__red_contact_lenses.mp4" type="video/mp4">
+            </video>
+            <p style="margin: 0.35rem 0 0.9rem 0; color: #000;">"Vampire makeup face of beautiful girl red contact lenses"</p>
+            <video autoplay muted loop controls playsinline style="width: 100%; height: auto; margin-top: 0.75rem;">
+              <source src="./static/videos_compressed/wan2.1_1.3B_30/a_truck_and_a_bicycle.mp4" type="video/mp4">
+            </video>
+            <p style="margin: 0.35rem 0 0.9rem 0; color: #000;">"A truck and a bicycle"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{chung2026seacache,
+  title={SeaCache: Spectral-Evolution-Aware Cache for Accelerating Diffusion Models},
+  author={Chung, Jiwoo and Hyun, Sangeek and Lee, MinKyu and Han, Byeongju and Cha, Geonho and Wee, Dongyoon and Hong, Youngjun and Heo, Jae-Pil},
+  journal={arXiv preprint arXiv:2602.18993},
+  year={2026}
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template"
+              target="_blank">Academic Project Page Template</a> which was adopted from the <a
+              href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            <br> This website is licensed under a <a rel="license"
+              href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+              Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
