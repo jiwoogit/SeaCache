@@ -43,7 +43,7 @@ Latency Performance may vary depending on your GPU. In our setup, we used an sin
 - T2V model (720p):
 
 *A cat walks on the grass, realistic style.*
-<video src="../assets/hunyuanvide_720p.mp4" controls muted playsinline width="832"></video>
+<video src="https://github.com/user-attachments/assets/bf0adf4d-4ace-4684-acc8-0bc4e82910ba" controls muted playsinline width="832"></video>
 
 | Original | SeaCache (δ = 0.2) | SeaCache (δ = 0.4) |
 |:---------------:|:-----------------------------------:|:-----------------------------------:|
