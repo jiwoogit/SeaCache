@@ -43,7 +43,7 @@ Arguments:
 Latency Performance may vary depending on your GPU. In our setup, we used an NVIDIA RTX PRO 6000 Blackwell.
 
 *a high-resolution photo of a panda drinking coffee in a cozy cafe*
-![FLUX coffee example](../assets/flux_coffee.png)
+![FLUX coffee example](https://github.com/user-attachments/assets/00138557-3994-412f-8c9a-4e097ca65fdb)
 
 |       FLUX.1 [dev]       |   SeaCache (δ = 0.3)   |   SeaCache (δ = 0.6)   |
 |:------------------------:|:----------------------:|:----------------------:|
