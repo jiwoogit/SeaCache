@@ -42,16 +42,18 @@ Latency Performance may vary depending on your GPU. In our setup, we used an sin
 - T2V 1.3B model (480p):
 
 *Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.*
-<video src="../assets/wan2.1_1.3b_t2v.mp4" controls muted playsinline width="832"></video>
+<video src="https://github.com/user-attachments/assets/40133fc7-aa9e-404e-bde8-acc6e1fb61be
+" controls muted playsinline width="832"></video>
 
 | Original | SeaCache (δ = 0.2) | SeaCache (δ = 0.35) |
 |:---------------:|:-----------------------------------:|:-----------------------------------:|
-|     2 min 56 sec     |               1min 24 sec s               |               56 sec               |
+|     2 min 56 sec     |               1min 24 sec               |               56 sec               |
 
 - T2V 14B model (480p):
 
 *Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.*
-<video src="../assets/wan2.1_14b_t2v_480p.mp4" controls muted playsinline width="832"></video>
+<video src="https://github.com/user-attachments/assets/91af1962-3ea0-42a1-99ae-b4f947f6ab8e
+" controls muted playsinline width="832"></video>
 
 | Original | SeaCache (δ = 0.2) | SeaCache (δ = 0.4) |
 |:---------------:|:-----------------------------------:|:-----------------------------------:|
@@ -60,23 +62,25 @@ Latency Performance may vary depending on your GPU. In our setup, we used an sin
 - T2V 14B model (720p):
 
 *Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.*
-<video src="../assets/wan2.1_14b_t2v_720p.mp4" controls muted playsinline width="832"></video>
+<video src="https://github.com/user-attachments/assets/777d94a3-7fce-4510-9895-39ce86ed0a05
+" controls muted playsinline width="832"></video>
 
 | Original | SeaCache (δ = 0.2) | SeaCache (δ = 0.4) |
 |:---------------:|:-----------------------------------:|:-----------------------------------:|
 |   51 min 13 sec   |           25 min 32 sec           |           16 min 30 sec           |
+
 
 - I2V 14B model (720p):
 
 *a bald eagle flying over a tree filled forest*
 | Input Image | Output Video |
 |:--:|:--:|
-| <img src="../assets/a%20bald%20eagle%20flying%20over%20a%20tree%20filled%20forest.jpg" height="256" /> | <video src="../assets/wan2.1_14b_i2v_720p_1.mp4" controls muted playsinline height="256"></video> |
+| <img src="https://github.com/user-attachments/assets/711cb5da-414a-4460-9ea0-d81f96faf881" height="256" /> | <video src="https://github.com/user-attachments/assets/71ee1ace-9b9d-4e12-a0ae-0ec9b5f9d68d" controls muted playsinline height="200"></video> |
 
 *a basket of french fries in a fryer*
 | Input Image | Output Video |
 |:--:|:--:|
-| <img src="../assets/a%20basket%20of%20french%20fries%20in%20a%20fryer.jpg" height="256" /> | <video src="../assets/wan2.1_14b_i2v_720p_2.mp4" controls muted playsinline height="256"></video> |
+| <img src="https://github.com/user-attachments/assets/e769bc36-9c6b-4cae-a430-e7398ffd8d2c" height="256" /> | <video src="https://github.com/user-attachments/assets/86f52052-6107-466b-94b5-1fdbfeec8870" controls muted playsinline height="256"></video> |
 
 | Original | SeaCache (δ = 0.2) | SeaCache (δ = 0.4) |
 |:---------------:|:-----------------------------------:|:-----------------------------------:|
