@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+build/
+dist/
+
+# PyTorch & Deep Learning
+*.pt
+*.pth
+*.pwf
+*.ckpt
+*.onnx
+data/
+datasets/
+*.zip
+*.tar.gz
+
+# Logs & Visualization
+runs/
+wandb/
+lightning_logs/
+.tensorboard-logs/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# System & IDE
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.log
