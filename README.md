@@ -52,10 +52,11 @@ We thank the authors and contributors for their efforts.
 If SeaCache is useful for your research or applications, please consider starring this repository and citing:
 
 ```bibtex
-@article{chung2026seacache,
+@inproceedings{chung2026seacache,
   title={SeaCache: Spectral-Evolution-Aware Cache for Accelerating Diffusion Models},
   author={Chung, Jiwoo and Hyun, Sangeek and Lee, MinKyu and Han, Byeongju and Cha, Geonho and Wee, Dongyoon and Hong, Youngjun and Heo, Jae-Pil},
-  journal={arXiv preprint arXiv:2602.18993},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={14283--14294},
   year={2026}
 }
 ```
